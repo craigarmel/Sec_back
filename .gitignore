@@ -41,10 +41,24 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
+.env.production
+.env.*.local
+
+# Secrets
+secrets/
+config/secrets/
+*.pem
+*.key
 
 # temp directory
 .temp
 .tmp
+
+# Uploads
+uploads/
+*.jpg
+*.png
+*.pdf
 
 # Runtime data
 pids

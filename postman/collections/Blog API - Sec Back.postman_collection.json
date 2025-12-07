@@ -1,0 +1,568 @@
+{
+  "info": {
+    "_postman_id": "ef8a9901-e3f6-4dd7-91d6-543532bafaa2",
+    "name": "Blog API - Sec Back",
+    "description": "Collection Postman pour tester l'API du blog avec authentification JWT",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "id": "1a5d9ec1-d090-4f00-9cf1-8e33023ca6c3",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"name\": \"John Doe\",\n  \"password\": \"SecurePass123!\",\n  \"consentGiven\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Créer un nouveau compte utilisateur"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.user && response.user.id) {",
+                  "        pm.environment.set('user_id', response.user.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "id": "3751a7cc-66d3-4d33-86fe-78871f64ec4d"
+              }
+            }
+          ],
+          "id": "8883a952-dcde-47f7-bcf7-4cddb2ea6701",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Se connecter et recevoir un cookie d'authentification"
+          }
+        },
+        {
+          "name": "Logout",
+          "id": "1003f641-cb1a-4924-9bb4-b172d16d4f23",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            },
+            "description": "Se déconnecter (supprime le cookie)"
+          }
+        }
+      ],
+      "id": "b2d77554-184b-412b-99f8-8aadcb8413c2",
+      "description": "Endpoints d'authentification"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users (Admin)",
+          "id": "3a458eb9-0679-4541-87f0-c75c73a1b8b7",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "description": "Récupérer tous les utilisateurs (Admin uniquement)"
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "id": "a12333aa-a9fb-4f64-b8e8-3f37ad3cac1d",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/users/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{user_id}}",
+                  "description": "ID de l'utilisateur"
+                }
+              ]
+            },
+            "description": "Récupérer un utilisateur par son ID (propre profil ou admin)"
+          }
+        },
+        {
+          "name": "Update User",
+          "id": "ba7e2e24-5459-4916-afeb-0bc0a71b174f",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"newemail@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/users/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{user_id}}",
+                  "description": "ID de l'utilisateur"
+                }
+              ]
+            },
+            "description": "Mettre à jour un utilisateur"
+          }
+        }
+      ],
+      "id": "6bd4b984-4586-4854-ac3e-4a05e7fc8e2f",
+      "description": "Endpoints pour la gestion des utilisateurs"
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Create Post",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.id) {",
+                  "        pm.environment.set('post_id', response.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "id": "35256782-b91a-41b2-920b-dbaad7a6d4c2"
+              }
+            }
+          ],
+          "id": "14774f7a-1c21-449e-8daf-c5913b1130c9",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mon premier article\",\n  \"content\": \"Ceci est le contenu de mon article. Il doit contenir au moins 10 caractères pour être valide.\",\n  \"imageUrl\": \"https://example.com/image.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/posts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            },
+            "description": "Créer un nouvel article (authentification requise)"
+          }
+        },
+        {
+          "name": "Get All Posts",
+          "id": "86af38ae-f4de-4497-bd1a-b52e5aab837f",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/posts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts"
+              ]
+            },
+            "description": "Récupérer tous les articles (public)"
+          }
+        },
+        {
+          "name": "Get Post by ID",
+          "id": "7c5e0024-78f4-4de0-89e7-064c09218552",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/posts/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{post_id}}",
+                  "description": "ID de l'article"
+                }
+              ]
+            },
+            "description": "Récupérer un article par son ID (public)"
+          }
+        },
+        {
+          "name": "Update Post",
+          "id": "e3400f09-1acf-4381-bf7e-b236da3192a5",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Article mis à jour\",\n  \"content\": \"Nouveau contenu de l'article mis à jour.\",\n  \"imageUrl\": \"https://example.com/new-image.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/posts/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{post_id}}",
+                  "description": "ID de l'article"
+                }
+              ]
+            },
+            "description": "Mettre à jour un article (auteur uniquement)"
+          }
+        },
+        {
+          "name": "Delete Post",
+          "id": "ec9a1c89-f956-47e8-a111-b3ec1b464e5b",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/posts/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{post_id}}",
+                  "description": "ID de l'article"
+                }
+              ]
+            },
+            "description": "Supprimer un article (auteur uniquement)"
+          }
+        }
+      ],
+      "id": "9ef2dff4-6911-4097-8ca8-c83cbda0d514",
+      "description": "Endpoints pour la gestion des articles"
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Create Comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.id) {",
+                  "        pm.environment.set('comment_id', response.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "id": "a9acd969-5c40-4c36-9fc4-2b119dd7838a"
+              }
+            }
+          ],
+          "id": "7162a75d-6661-4406-8a37-cf6b12f8df59",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Ceci est un commentaire sur l'article.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/posts/:postId/comments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                ":postId",
+                "comments"
+              ],
+              "variable": [
+                {
+                  "key": "postId",
+                  "value": "{{post_id}}",
+                  "description": "ID de l'article"
+                }
+              ]
+            },
+            "description": "Créer un commentaire sur un article (authentification requise)"
+          }
+        },
+        {
+          "name": "Get Comment by ID",
+          "id": "108d4fc7-2534-4451-99bf-e7a8a5a972d4",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/posts/:postId/comments/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                ":postId",
+                "comments",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "postId",
+                  "value": "{{post_id}}",
+                  "description": "ID de l'article"
+                },
+                {
+                  "key": "id",
+                  "value": "{{comment_id}}",
+                  "description": "ID du commentaire"
+                }
+              ]
+            },
+            "description": "Récupérer un commentaire par son ID (public)"
+          }
+        },
+        {
+          "name": "Delete Comment",
+          "id": "13fc0dde-7ee5-40d4-b097-acaec9d75593",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/posts/:postId/comments/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "posts",
+                ":postId",
+                "comments",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "postId",
+                  "value": "{{post_id}}",
+                  "description": "ID de l'article"
+                },
+                {
+                  "key": "id",
+                  "value": "{{comment_id}}",
+                  "description": "ID du commentaire"
+                }
+              ]
+            },
+            "description": "Supprimer un commentaire (auteur uniquement)"
+          }
+        }
+      ],
+      "id": "e9fcf4f1-3c77-4ecf-9733-e90ce85e1a98",
+      "description": "Endpoints pour la gestion des commentaires"
+    },
+    {
+      "name": "Legal",
+      "item": [
+        {
+          "name": "Get Privacy Policy",
+          "id": "08785153-e7a0-4a2b-9597-bc422a13e620",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/legal/privacy",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "legal",
+                "privacy"
+              ]
+            },
+            "description": "Récupérer la politique de confidentialité"
+          }
+        },
+        {
+          "name": "Get Terms of Service",
+          "id": "8ed0705f-0ba7-477c-9d31-3c2e70796f8d",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/legal/terms",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "legal",
+                "terms"
+              ]
+            },
+            "description": "Récupérer les conditions d'utilisation"
+          }
+        }
+      ],
+      "id": "a692abf5-5d4d-4cb2-940e-fc207f529fe1",
+      "description": "Endpoints pour les pages légales"
+    },
+    {
+      "name": "App",
+      "item": [
+        {
+          "name": "Health Check",
+          "id": "1f234684-1a32-4de5-a218-21cf6bb5ded8",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Vérifier que l'API est accessible"
+          }
+        }
+      ],
+      "id": "6ecc835d-f199-440f-af0c-5675f59cd2e6",
+      "description": "Endpoints généraux de l'application"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJzdWIiOiJmZmFjM2FhZC02MDZjLTRiNDgtOWFhYi04M2E2MWRhMjQ2OTgiLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3NjUxMzQ5NDAsImV4cCI6MTc2NTEzNDk3MH0.qPLvSs8GKm-fUw7JepLjnf5VdvEPCS9cVgCHkILnM5Q",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "id": "26f9ef4d-34b8-42c6-9ce2-c527ebfca5c2",
+      "key": "base_url",
+      "value": "http://localhost:4000"
+    },
+    {
+      "id": "092f56d9-9eac-40ca-8b5c-f7a9f0eb64d6",
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "id": "33e8aa79-38aa-45e9-ab03-bc1acba5e8dc",
+      "key": "post_id",
+      "value": ""
+    },
+    {
+      "id": "0210f5e0-3915-41d4-aeb3-3bd5d202c6dd",
+      "key": "comment_id",
+      "value": ""
+    }
+  ]
+}
