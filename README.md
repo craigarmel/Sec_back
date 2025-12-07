@@ -9,6 +9,7 @@ API REST pour un site web de blog développée avec NestJS, conforme aux meilleu
 - Node.js 20+
 - PostgreSQL 14+
 - npm ou yarn
+- nest (npm install -g @nestjs/cli)
 
 ### Variables d'environnement
 

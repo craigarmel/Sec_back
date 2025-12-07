@@ -51,11 +51,26 @@ async function bootstrap() {
 
   // CORS
   const corsOrigin = configService.get('CORS_ORIGIN') || 'http://localhost:3000';
+  const corsOrigins = corsOrigin.split(',').map(origin => origin.trim());
   app.enableCors({
-    origin: corsOrigin,
+    origin: (origin, callback) => {
+      // En développement, autoriser localhost sur n'importe quel port
+      if (process.env.NODE_ENV === 'development') {
+        if (!origin || origin.startsWith('http://localhost:') || origin.startsWith('https://localhost:')) {
+          callback(null, true);
+          return;
+        }
+      }
+      // En production, vérifier les origines autorisées
+      if (!origin || corsOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
   });
 
   const port = configService.get('PORT') || 4000;

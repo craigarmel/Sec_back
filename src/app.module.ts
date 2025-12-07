@@ -1,8 +1,9 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+// DÉSACTIVÉ POUR LE DÉVELOPPEMENT - Réactiver en production
+// import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+// import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -30,16 +31,17 @@ import databaseConfig from './config/database.config';
     }),
 
     // Rate limiting pour protéger contre les attaques par force brute
-    ThrottlerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => [
-        {
-          ttl: 60000, // 1 minute
-          limit: 10, // 10 requêtes par minute
-        },
-      ],
-    }),
+    // DÉSACTIVÉ POUR LE DÉVELOPPEMENT - Réactiver en production
+    // ThrottlerModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (config: ConfigService) => [
+    //     {
+    //       ttl: 60000, // 1 minute
+    //       limit: 10, // 10 requêtes par minute
+    //     },
+    //   ],
+    // }),
 
     // Modules fonctionnels
     AuthModule,
@@ -50,10 +52,11 @@ import databaseConfig from './config/database.config';
   controllers: [AppController, LegalController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // DÉSACTIVÉ POUR LE DÉVELOPPEMENT - Réactiver en production
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
 })
 export class AppModule implements NestModule {

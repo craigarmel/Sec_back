@@ -38,7 +38,31 @@ export class CommentsService {
       author,
     });
 
-    return this.commentRepository.save(comment);
+    const savedComment = await this.commentRepository.save(comment);
+    
+    // Recharger le commentaire avec les relations pour retourner les données complètes
+    const commentWithRelations = await this.commentRepository.findOne({
+      where: { id: savedComment.id },
+      relations: ['author', 'post'],
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        updatedAt: true,
+        authorId: true,
+        postId: true,
+        author: {
+          id: true,
+          name: true,
+        },
+      },
+    });
+
+    if (!commentWithRelations) {
+      throw new NotFoundException('Erreur lors de la création du commentaire');
+    }
+
+    return commentWithRelations;
   }
 
   async findOne(id: string): Promise<Comment> {
